@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/tasks")
 @RequiredArgsConstructor
@@ -20,6 +22,12 @@ public class TaskController {
     public ResponseEntity<TaskDto> getTaskById(@PathVariable Integer id) throws ResourceNotFoundException {
         TaskDto taskDto = taskService.getTaskById(id);
         return ResponseEntity.ok(taskDto);
+    }
+
+    @GetMapping("all")
+    public ResponseEntity<List<TaskDto>> getAllTasks() {
+        List<TaskDto> taskList = taskService.getAllTasks();
+        return ResponseEntity.ok(taskList);
     }
 
     @PostMapping

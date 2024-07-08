@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,11 @@ public class TaskService {
         Task task =  taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found for id: " + id));
         return new TaskDto(task);
+    }
+
+    public List<TaskDto> getAllTasks() {
+        List<Task> tasks = taskRepository.findAll();
+        return tasks.stream().map(TaskDto::new).toList();
     }
 
     public TaskDto createTask(TaskCreateDto taskCreateDto) {
