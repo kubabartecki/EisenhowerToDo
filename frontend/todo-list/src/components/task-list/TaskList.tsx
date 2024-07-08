@@ -1,4 +1,5 @@
 import * as React from 'react';
+import dayjs from 'dayjs';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -18,9 +19,10 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import { Task, TaskCategory, TaskStatus } from '../../types/models';
+import { Task } from '../../types/models';
 import Search from '../search/Search';
 import TaskDetailsModal from '../task-details-modal/TaskDetailsModal';
+import { deleteTask } from '../../api/taskApi';
 
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -181,6 +183,7 @@ function EnhancedTableToolbar() {
 
 interface TaskListProps {
   tasks: Task[];
+  onRefresh?: () => void;
 }
 
 const TaskList: React.FC<TaskListProps> = (props) => {
@@ -192,6 +195,10 @@ const TaskList: React.FC<TaskListProps> = (props) => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [showModal, setShowModal] = React.useState(false);
   const [taskDetails, setTaskDetails] = React.useState<Task>();
+
+  React.useEffect(() => {
+    setTasks(props.tasks);
+  }, [props.tasks]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -220,6 +227,16 @@ const TaskList: React.FC<TaskListProps> = (props) => {
     setDense(event.target.checked);
   };
 
+  const handleTaskDelete = async (event: React.MouseEvent<unknown>, id: number) => {
+    event.stopPropagation();
+    try {
+      await deleteTask(id.toString());
+      props.onRefresh && props.onRefresh();
+    } catch (error) {
+      console.error('Failed to delete task');
+    }
+  };
+
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tasks.length) : 0;
@@ -230,7 +247,7 @@ const TaskList: React.FC<TaskListProps> = (props) => {
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
       ),
-    [order, orderBy, page, rowsPerPage],
+    [order, orderBy, page, rowsPerPage, tasks],
   );
 
   return (
@@ -270,10 +287,15 @@ const TaskList: React.FC<TaskListProps> = (props) => {
                     <TableCell>{row.description}</TableCell>
                     <TableCell>{row.status}</TableCell>
                     <TableCell>{row.category}</TableCell>
-                    <TableCell>{row.dueDate}</TableCell>
+                    <TableCell>{dayjs(row.dueDate).format('DD/MM/YYYY HH:mm')}</TableCell>
                     <TableCell>
                       <Tooltip title="Delete">
-                        <IconButton>
+                        <IconButton
+                          aria-label="delete"
+                          onClick={
+                            (event) => handleTaskDelete(event, row.id)
+                          }
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </Tooltip>

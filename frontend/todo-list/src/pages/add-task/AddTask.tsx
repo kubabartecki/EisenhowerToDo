@@ -38,7 +38,7 @@ const AddTask: React.FC = () => {
   }
   const saveTask = async (task: TaskCreate) => {
     try {
-      const data = await createTask(task);
+      await createTask(task);
       setShowSnackbar(true);
     } catch (error) {
       console.error('Failed to create task');
