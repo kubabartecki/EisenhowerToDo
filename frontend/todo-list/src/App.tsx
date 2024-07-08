@@ -9,8 +9,6 @@ import TaskMatrix from "./pages/matrix/TaskMatrix";
 
 import theme from './theme/theme';
 import './App.css';
-import "./theme/variables.css";
-import "./theme/global.scss";
 
 const App: React.FC = () => {
   return (

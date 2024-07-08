@@ -4,8 +4,6 @@ import Box from '@mui/material/Box';
 import TaskList from '../task-list/TaskList';
 import { Task, TaskCategory, TaskStatus } from '../../types/models';
 
-import './TaskPanel.scss';
-
 
 const TaskPanel: React.FC = () => {
   const sampleTasks: Task[] = [
