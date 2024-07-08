@@ -5,7 +5,7 @@ export interface Task {
     description: string;
     status: TaskStatus;
     category: TaskCategory;
-    dueDate: Date;
+    dueDate: string;
 }
 
 export enum TaskStatus {
@@ -26,7 +26,7 @@ export interface TaskCreate {
     description: string;
     isUrgent: boolean;
     isImportant: boolean;
-    dueDate: Date;
+    dueDate: string;
 }
 
 export interface TaskUpdate {
@@ -35,6 +35,6 @@ export interface TaskUpdate {
     isUrgent: boolean;
     isImportant: boolean;
     status: TaskStatus;
-    dueDate: Date;
+    dueDate: string;
 }
 
