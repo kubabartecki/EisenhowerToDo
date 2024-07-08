@@ -32,8 +32,7 @@ export interface TaskCreate {
 export interface TaskUpdate {
     title: string;
     description: string;
-    isUrgent: boolean;
-    isImportant: boolean;
+    category: TaskCategory;
     status: TaskStatus;
     dueDate: string;
 }
