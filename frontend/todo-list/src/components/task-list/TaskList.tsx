@@ -42,15 +42,6 @@ function createData(
   };
 }
 
-const rows = [
-  createData(1, 'Task 1', 'Description for Task 1', TaskStatus.TODO, TaskCategory.DO, new Date().toDateString()),
-  createData(2, 'Task 2', 'Description for Task 2', TaskStatus.IN_PROGRESS, TaskCategory.SCHEDULE, new Date().toDateString()),
-  createData(3, 'Task 3', 'Description for Task 3', TaskStatus.DONE, TaskCategory.DELEGATE, new Date().toDateString()),
-  createData(4, 'Task 4', 'Description for Task 4', TaskStatus.TODO, TaskCategory.ELIMINATE, new Date().toDateString()),
-  createData(5, 'Task 5', 'Description for Task 5', TaskStatus.IN_PROGRESS, TaskCategory.DO, new Date().toDateString()),
-  createData(6, 'Task 6', 'Description for Task 6', TaskStatus.DONE, TaskCategory.SCHEDULE, new Date().toDateString()),
-];
-
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -212,6 +203,7 @@ interface TaskListProps {
 }
 
 const TaskList: React.FC<TaskListProps> = (props) => {
+  const [tasks, setTasks] = React.useState<Task[]>(props.tasks);
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Task>('id');
   const [page, setPage] = React.useState(0);
@@ -230,7 +222,7 @@ const TaskList: React.FC<TaskListProps> = (props) => {
   };
 
   const handleRowClick = (event: React.MouseEvent<unknown>, id: number) => {
-    setTaskDetails(rows.filter(row => row.id === id)[0]);
+    setTaskDetails(tasks.filter(row => row.id === id)[0]);
     setShowModal(true);
   };
 
@@ -249,11 +241,11 @@ const TaskList: React.FC<TaskListProps> = (props) => {
 
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tasks.length) : 0;
 
   const visibleRows = React.useMemo(
     () =>
-      stableSort(rows, getComparator(order, orderBy)).slice(
+      stableSort(tasks, getComparator(order, orderBy)).slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
       ),
@@ -325,7 +317,7 @@ const TaskList: React.FC<TaskListProps> = (props) => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={rows.length}
+          count={tasks.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
