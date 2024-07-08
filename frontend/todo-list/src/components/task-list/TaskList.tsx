@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -23,24 +22,6 @@ import { Task, TaskCategory, TaskStatus } from '../../types/models';
 import Search from '../search/Search';
 import TaskDetailsModal from '../task-details-modal/TaskDetailsModal';
 
-
-function createData(
-  id: number,
-  title: string,
-  description: string,
-  status: TaskStatus,
-  category: TaskCategory,
-  dueDate: string,
-): Task {
-  return {
-    id,
-    title,
-    description,
-    status,
-    category,
-    dueDate,
-  };
-}
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -269,9 +250,7 @@ const TaskList: React.FC<TaskListProps> = (props) => {
             />
             <TableBody>
               {visibleRows.map((row, index) => {
-                // const isItemSelected = isSelected(row.id);
                 const labelId = `enhanced-table-checkbox-${index}`;
-
                 return (
                   <TableRow
                     hover
