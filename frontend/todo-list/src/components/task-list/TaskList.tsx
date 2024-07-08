@@ -12,7 +12,6 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -22,15 +21,8 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { Task, TaskCategory, TaskStatus } from '../../types/models';
 import Search from '../search/Search';
+import TaskDetailsModal from '../task-details-modal/TaskDetailsModal';
 
-interface Data {
-  id: number;
-  title: string;
-  description: string;
-  status: TaskStatus;
-  category: TaskCategory;
-  dueDate: string;
-}
 
 function createData(
   id: number,
@@ -39,7 +31,7 @@ function createData(
   status: TaskStatus,
   category: TaskCategory,
   dueDate: string,
-): Data {
+): Task {
   return {
     id,
     title,
@@ -101,7 +93,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
 
 interface HeadCell {
   disablePadding: boolean;
-  id: keyof Data;
+  id: keyof Task;
   label: string;
   numeric: boolean;
 }
@@ -140,7 +132,7 @@ const headCells: readonly HeadCell[] = [
 ];
 
 interface EnhancedTableProps {
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Task) => void;
   order: Order;
   orderBy: string;
 }
@@ -149,7 +141,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } =
     props;
   const createSortHandler =
-    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+    (property: keyof Task) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
 
@@ -221,14 +213,16 @@ interface TaskListProps {
 
 const TaskList: React.FC<TaskListProps> = (props) => {
   const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof Data>('id');
+  const [orderBy, setOrderBy] = React.useState<keyof Task>('id');
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [showModal, setShowModal] = React.useState(false);
+  const [taskDetails, setTaskDetails] = React.useState<Task>();
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Data,
+    property: keyof Task,
   ) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -236,7 +230,8 @@ const TaskList: React.FC<TaskListProps> = (props) => {
   };
 
   const handleRowClick = (event: React.MouseEvent<unknown>, id: number) => {
-    // todo open modal
+    setTaskDetails(rows.filter(row => row.id === id)[0]);
+    setShowModal(true);
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -341,6 +336,11 @@ const TaskList: React.FC<TaskListProps> = (props) => {
         control={<Switch checked={dense} onChange={handleChangeDense} />}
         label="Dense padding"
       />
+      <TaskDetailsModal
+        isOpen={showModal}
+        task={taskDetails}
+        onClose={() => setShowModal(false)}
+      ></TaskDetailsModal>
     </Box>
   );
 }
