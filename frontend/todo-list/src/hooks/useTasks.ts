@@ -6,6 +6,7 @@ export const useTasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [shouldRefresh, setShouldRefresh] = useState<boolean>(false);
 
   useEffect(() => {
     const loadTasks = async () => {
@@ -19,8 +20,10 @@ export const useTasks = () => {
       }
     };
 
+    console.log('useTasks');
     loadTasks();
-  }, []);
+    setShouldRefresh(false);
+  }, [shouldRefresh]);
 
-  return { tasks, loading, error };
+  return { tasks, loading, error, setShouldRefresh };
 };
