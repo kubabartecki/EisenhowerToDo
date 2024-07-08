@@ -15,7 +15,7 @@ const TaskPanel: React.FC = () => {
       description: 'Description for Task 1',
       status: TaskStatus.TODO,
       category: TaskCategory.DO,
-      dueDate: new Date(),
+      dueDate: "2024-07-17T05:25:00+02:00"
     },
     {
       id: 2,
@@ -23,7 +23,7 @@ const TaskPanel: React.FC = () => {
       description: 'Description for Task 2',
       status: TaskStatus.IN_PROGRESS,
       category: TaskCategory.SCHEDULE,
-      dueDate: new Date(),
+      dueDate: "2024-07-17T05:25:00+02:00"
     },
     {
       id: 3,
@@ -31,7 +31,7 @@ const TaskPanel: React.FC = () => {
       description: 'Description for Task 3',
       status: TaskStatus.DONE,
       category: TaskCategory.DELEGATE,
-      dueDate: new Date(),
+      dueDate: "2024-07-17T05:25:00+02:00"
     },
   ];
   const [tasks, setTasks] = useState(sampleTasks);
