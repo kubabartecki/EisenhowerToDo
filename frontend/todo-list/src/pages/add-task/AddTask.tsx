@@ -8,9 +8,14 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import LinearProgress from '@mui/material/LinearProgress';
+
 import { TaskCreate } from '../../types/models';
+import { createTask } from '../../api/taskApi';
 
 import './AddTask.scss';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 const initialTask: TaskCreate = {
   title: "",
@@ -24,13 +29,28 @@ const booleanOptions = ["True", "False"];
 const AddTask: React.FC = () => {
   const [task, setTask] = React.useState<TaskCreate>(initialTask);
   const [dueDate, setDueDate] = React.useState<Dayjs | null>(null);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [showSnackbar, setShowSnackbar] = React.useState<boolean>(false);
+  const [showErrorSnackbar, setShowErrorSnackbar] = React.useState<boolean>(false);
 
   const onSave = () => {
-    console.log(task);
+    saveTask(task);
   }
+  const saveTask = async (task: TaskCreate) => {
+    try {
+      const data = await createTask(task);
+      setShowSnackbar(true);
+    } catch (error) {
+      console.error('Failed to create task');
+      setShowErrorSnackbar(true);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className='add-page'>
+      {loading && <LinearProgress />}
       <h2 className='add-task-header'>Create new task</h2>
       <Box
         className='add-task-form'
@@ -103,7 +123,7 @@ const AddTask: React.FC = () => {
               value={dueDate}
               onChange={(newValue) => {
                 setDueDate(newValue);
-                setTask({ ...task, dueDate: newValue?.format() || "" });
+                setTask({ ...task, dueDate: newValue?.format('YYYY-MM-DDTHH:mm:ss') || "" });
               }}
             />
           </DemoContainer>
@@ -116,6 +136,42 @@ const AddTask: React.FC = () => {
       >
         Create
       </Button>
+      <Snackbar
+        open={showSnackbar}
+        autoHideDuration={3000}
+        onClose={(event: React.SyntheticEvent | Event, reason?: string) => {
+          if (reason === 'clickaway') {
+            return;
+          }
+          setShowSnackbar(false);
+        }}
+      >
+        <Alert
+          severity="success"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          Task created successfully!
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={showErrorSnackbar}
+        autoHideDuration={3000}
+        onClose={(event: React.SyntheticEvent | Event, reason?: string) => {
+          if (reason === 'clickaway') {
+            return;
+          }
+          setShowErrorSnackbar(false);
+        }}
+      >
+        <Alert
+          severity="error"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          Error while creating task!
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
