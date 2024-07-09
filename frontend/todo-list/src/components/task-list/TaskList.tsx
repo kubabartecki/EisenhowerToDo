@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { alpha } from '@mui/material/styles';
+import dayjs from 'dayjs';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -19,37 +19,11 @@ import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import { Task, TaskCategory, TaskStatus } from '../../types/models';
+import { Task } from '../../types/models';
 import Search from '../search/Search';
 import TaskDetailsModal from '../task-details-modal/TaskDetailsModal';
+import { deleteTask } from '../../api/taskApi';
 
-
-function createData(
-  id: number,
-  title: string,
-  description: string,
-  status: TaskStatus,
-  category: TaskCategory,
-  dueDate: string,
-): Task {
-  return {
-    id,
-    title,
-    description,
-    status,
-    category,
-    dueDate,
-  };
-}
-
-const rows = [
-  createData(1, 'Task 1', 'Description for Task 1', TaskStatus.TODO, TaskCategory.DO, new Date().toDateString()),
-  createData(2, 'Task 2', 'Description for Task 2', TaskStatus.IN_PROGRESS, TaskCategory.SCHEDULE, new Date().toDateString()),
-  createData(3, 'Task 3', 'Description for Task 3', TaskStatus.DONE, TaskCategory.DELEGATE, new Date().toDateString()),
-  createData(4, 'Task 4', 'Description for Task 4', TaskStatus.TODO, TaskCategory.ELIMINATE, new Date().toDateString()),
-  createData(5, 'Task 5', 'Description for Task 5', TaskStatus.IN_PROGRESS, TaskCategory.DO, new Date().toDateString()),
-  createData(6, 'Task 6', 'Description for Task 6', TaskStatus.DONE, TaskCategory.SCHEDULE, new Date().toDateString()),
-];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -209,9 +183,11 @@ function EnhancedTableToolbar() {
 
 interface TaskListProps {
   tasks: Task[];
+  onRefresh?: () => void;
 }
 
 const TaskList: React.FC<TaskListProps> = (props) => {
+  const [tasks, setTasks] = React.useState<Task[]>(props.tasks);
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Task>('id');
   const [page, setPage] = React.useState(0);
@@ -219,6 +195,10 @@ const TaskList: React.FC<TaskListProps> = (props) => {
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [showModal, setShowModal] = React.useState(false);
   const [taskDetails, setTaskDetails] = React.useState<Task>();
+
+  React.useEffect(() => {
+    setTasks(props.tasks);
+  }, [props.tasks]);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -230,7 +210,7 @@ const TaskList: React.FC<TaskListProps> = (props) => {
   };
 
   const handleRowClick = (event: React.MouseEvent<unknown>, id: number) => {
-    setTaskDetails(rows.filter(row => row.id === id)[0]);
+    setTaskDetails(tasks.filter(row => row.id === id)[0]);
     setShowModal(true);
   };
 
@@ -247,17 +227,27 @@ const TaskList: React.FC<TaskListProps> = (props) => {
     setDense(event.target.checked);
   };
 
+  const handleTaskDelete = async (event: React.MouseEvent<unknown>, id: number) => {
+    event.stopPropagation();
+    try {
+      await deleteTask(id.toString());
+      props.onRefresh && props.onRefresh();
+    } catch (error) {
+      console.error('Failed to delete task');
+    }
+  };
+
   // Avoid a layout jump when reaching the last page with empty rows.
   const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - tasks.length) : 0;
 
   const visibleRows = React.useMemo(
     () =>
-      stableSort(rows, getComparator(order, orderBy)).slice(
+      stableSort(tasks, getComparator(order, orderBy)).slice(
         page * rowsPerPage,
         page * rowsPerPage + rowsPerPage,
       ),
-    [order, orderBy, page, rowsPerPage],
+    [order, orderBy, page, rowsPerPage, tasks],
   );
 
   return (
@@ -277,9 +267,7 @@ const TaskList: React.FC<TaskListProps> = (props) => {
             />
             <TableBody>
               {visibleRows.map((row, index) => {
-                // const isItemSelected = isSelected(row.id);
                 const labelId = `enhanced-table-checkbox-${index}`;
-
                 return (
                   <TableRow
                     hover
@@ -299,10 +287,15 @@ const TaskList: React.FC<TaskListProps> = (props) => {
                     <TableCell>{row.description}</TableCell>
                     <TableCell>{row.status}</TableCell>
                     <TableCell>{row.category}</TableCell>
-                    <TableCell>{row.dueDate}</TableCell>
+                    <TableCell>{dayjs(row.dueDate).format('DD/MM/YYYY HH:mm')}</TableCell>
                     <TableCell>
                       <Tooltip title="Delete">
-                        <IconButton>
+                        <IconButton
+                          aria-label="delete"
+                          onClick={
+                            (event) => handleTaskDelete(event, row.id)
+                          }
+                        >
                           <DeleteIcon />
                         </IconButton>
                       </Tooltip>
@@ -325,7 +318,7 @@ const TaskList: React.FC<TaskListProps> = (props) => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={rows.length}
+          count={tasks.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage}
@@ -339,7 +332,10 @@ const TaskList: React.FC<TaskListProps> = (props) => {
       <TaskDetailsModal
         isOpen={showModal}
         task={taskDetails}
-        onClose={() => setShowModal(false)}
+        onClose={() => {
+          setShowModal(false);
+          props.onRefresh && props.onRefresh();
+        }}
       ></TaskDetailsModal>
     </Box>
   );

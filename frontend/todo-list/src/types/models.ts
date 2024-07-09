@@ -32,9 +32,10 @@ export interface TaskCreate {
 export interface TaskUpdate {
     title: string;
     description: string;
-    isUrgent: boolean;
-    isImportant: boolean;
-    status: TaskStatus;
+    category: TaskCategoryString;
+    status: TaskStatusString;
     dueDate: string;
 }
 
+export type TaskStatusString = keyof typeof TaskStatus;
+export type TaskCategoryString = keyof typeof TaskCategory;
