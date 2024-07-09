@@ -16,6 +16,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { visuallyHidden } from '@mui/utils';
+
 import { Task } from '../../types/models';
 import TaskDetailsModal from '../task-details-modal/TaskDetailsModal';
 import { deleteTask } from '../../api/taskApi';
