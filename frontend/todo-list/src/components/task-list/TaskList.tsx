@@ -332,7 +332,10 @@ const TaskList: React.FC<TaskListProps> = (props) => {
       <TaskDetailsModal
         isOpen={showModal}
         task={taskDetails}
-        onClose={() => setShowModal(false)}
+        onClose={() => {
+          setShowModal(false);
+          props.onRefresh && props.onRefresh();
+        }}
       ></TaskDetailsModal>
     </Box>
   );

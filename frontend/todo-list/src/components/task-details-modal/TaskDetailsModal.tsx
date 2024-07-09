@@ -9,7 +9,11 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { Task, TaskCategory, TaskStatus } from '../../types/models';
+import { Task, TaskCategory, TaskStatus, TaskUpdate } from '../../types/models';
+import { updateTask } from '../../api/taskApi';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import { mapTaskCategoryToString, mapTaskStatusToString } from '../../utils/enumMapping';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -32,17 +36,30 @@ interface TaskDetailsModalProps {
 const TaskDetailsModal: React.FC<TaskDetailsModalProps> = (props) => {
   const [task, setTask] = React.useState<Task | undefined>(props.task);
   const [dueDate, setDueDate] = React.useState<Dayjs | null>(dayjs(props.task?.dueDate));
-  
+  const [showErrorSnackbar, setShowErrorSnackbar] = React.useState<boolean>(false);
+
   React.useEffect
     (() => {
       setTask(props.task);
       setDueDate(dayjs(props.task?.dueDate));
     }, [props.task]);
 
-  const onSave = () => {
-    console.log("Todo save task");
-    console.log(task);
-    props.onClose();
+  const onSave = async () => {
+    try {
+      await updateTask(
+        task!.id.toString(),
+        {
+          title: task!.title,
+          description: task!.description,
+          status: mapTaskStatusToString(task!.status),
+          category: mapTaskCategoryToString(task!.category),
+          dueDate: task!.dueDate
+        } as TaskUpdate
+      );
+      props.onClose();
+    } catch (error) {
+      setShowErrorSnackbar(true);
+    }
   }
 
   return (
@@ -120,7 +137,7 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = (props) => {
                       value={dueDate}
                       onChange={(newValue) => {
                         setDueDate(newValue);
-                        setTask({ ...task, dueDate: newValue?.format() || ""});
+                        setTask({ ...task, dueDate: newValue?.format('YYYY-MM-DDTHH:mm:ss') || "" });
                       }}
                     />
                   </DemoContainer>
@@ -137,6 +154,24 @@ const TaskDetailsModal: React.FC<TaskDetailsModalProps> = (props) => {
           }
         </Box>
       </Modal>
+      <Snackbar
+        open={showErrorSnackbar}
+        autoHideDuration={3000}
+        onClose={(event: React.SyntheticEvent | Event, reason?: string) => {
+          if (reason === 'clickaway') {
+            return;
+          }
+          setShowErrorSnackbar(false);
+        }}
+      >
+        <Alert
+          severity="error"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          Error while updating task!
+        </Alert>
+      </Snackbar>
     </div>
   );
 }
