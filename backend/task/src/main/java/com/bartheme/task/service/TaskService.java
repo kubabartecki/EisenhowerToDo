@@ -9,7 +9,9 @@ import com.bartheme.task.dto.TaskDto;
 import com.bartheme.task.model.TaskEisenhowerCategory;
 import com.bartheme.task.model.TaskStatus;
 import com.bartheme.task.repository.TaskRepository;
+import com.bartheme.task.specification.TaskSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,6 +30,12 @@ public class TaskService {
 
     public List<TaskDto> getAllTasks() {
         List<Task> tasks = taskRepository.findAll();
+        return tasks.stream().map(TaskDto::new).toList();
+    }
+
+    public List<TaskDto> filterTasks(List<String> statuses, List<String> categories, String title, Sort sort) {
+        TaskSpecification spec = new TaskSpecification(statuses, categories, title);
+        List<Task> tasks = taskRepository.findAll(spec, sort);
         return tasks.stream().map(TaskDto::new).toList();
     }
 
