@@ -6,6 +6,7 @@ import com.bartheme.task.exception.ResourceNotFoundException;
 import com.bartheme.task.exception.UnprocessableContentException;
 import com.bartheme.task.model.Task;
 import com.bartheme.task.dto.TaskDto;
+import com.bartheme.task.model.TaskEisenhowerCategory;
 import com.bartheme.task.model.TaskStatus;
 import com.bartheme.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,15 +43,18 @@ public class TaskService {
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found for id: " + id));
         task.setTitle(taskUpdateDto.getTitle());
         task.setDescription(taskUpdateDto.getDescription());
-        task.setCategory(taskUpdateDto.isUrgent(), taskUpdateDto.isImportant());
         try {
             task.setStatus(TaskStatus.valueOf(taskUpdateDto.getStatus()));
         } catch (IllegalArgumentException e) {
             throw new UnprocessableContentException("Not valid status enum value");
         }
+        try {
+            task.setCategory(TaskEisenhowerCategory.valueOf(taskUpdateDto.getCategory()));
+        } catch (IllegalArgumentException e) {
+            throw new UnprocessableContentException("Not valid category enum value");
+        }
         task.setDueDate(LocalDateTime.parse(taskUpdateDto.getDueDate()));
-        taskRepository.save(task);
-        return new TaskDto(task);
+        return new TaskDto(taskRepository.save(task));
     }
 
 
