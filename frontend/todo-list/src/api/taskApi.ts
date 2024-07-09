@@ -4,8 +4,8 @@ import { mapTaskCategory, mapTaskStatus } from '../utils/enumMapping';
 
 export const fetchTasks = async (
   { statuses, categories, title, sortBy, sortDirection }: {
-    statuses?: [TaskStatusString],
-    categories?: [TaskCategoryString],
+    statuses?: TaskStatusString[],
+    categories?: TaskCategoryString[],
     title?: string,
     sortBy?: keyof Task,
     sortDirection?: 'asc' | 'desc'
@@ -20,7 +20,7 @@ export const fetchTasks = async (
     sortDirection ? `sortDirection=${sortDirection}` : '',
   ].filter(Boolean).join('&');
 
-  const url = '/tasks/all?' + params;
+  const url = '/tasks/all' + (params ? `?${params}` : '');
   const tasks = await get<Task[]>(url);
   return tasks.map(task => ({
     ...task,
