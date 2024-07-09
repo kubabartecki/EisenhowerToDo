@@ -20,7 +20,6 @@ export const useTasks = () => {
       }
     };
 
-    console.log('useTasks');
     loadTasks();
     setShouldRefresh(false);
   }, [shouldRefresh]);

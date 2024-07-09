@@ -89,7 +89,6 @@ const AddTask: React.FC = () => {
           required
           value={task.isUrgent ? "True" : "False"}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-            console.log(event.target.value);
             setTask({ ...task, isUrgent: event.target.value == "True" });
           }}
         >

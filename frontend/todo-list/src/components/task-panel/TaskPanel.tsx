@@ -9,7 +9,6 @@ import { useTasks } from '../../hooks/useTasks';
 const TaskPanel: React.FC = () => {
   const { tasks, loading, error, setShouldRefresh } = useTasks();
   if (error) return <p>{error}</p>;
-  console.log(tasks);
   return (
     <Box className="task-panel">
       {
