@@ -9,20 +9,18 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
+
 import { Task } from '../../types/models';
-import Search from '../search/Search';
 import TaskDetailsModal from '../task-details-modal/TaskDetailsModal';
 import { deleteTask } from '../../api/taskApi';
+import EnhancedTableToolbar from '../table/toolbar/EnhancedTableToolbar';
 
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -155,31 +153,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   );
 }
 
-function EnhancedTableToolbar() {
-  return (
-    <Toolbar
-      sx={{
-        pl: { sm: 2 },
-        pr: { xs: 1, sm: 1 }
-      }}
-    >
-      <Typography
-        sx={{ flex: '1 1 100%' }}
-        variant="h6"
-        id="tableTitle"
-        component="div"
-      >
-        Tasks
-      </Typography>
-      <Search></Search>
-      <Tooltip title="Filter list">
-        <IconButton>
-          <FilterListIcon />
-        </IconButton>
-      </Tooltip>
-    </Toolbar>
-  );
-}
+
 
 interface TaskListProps {
   tasks: Task[];
@@ -253,7 +227,9 @@ const TaskList: React.FC<TaskListProps> = (props) => {
   return (
     <Box sx={{ width: '100%' }}>
       <Paper sx={{ width: '100%', mb: 2, paddingX: '15px' }}>
-        <EnhancedTableToolbar />
+        <EnhancedTableToolbar
+          setTasks={setTasks}
+        />
         <TableContainer>
           <Table
             sx={{ minWidth: 750 }}

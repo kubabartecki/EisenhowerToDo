@@ -7,6 +7,7 @@ import com.bartheme.task.exception.ResourceNotFoundException;
 import com.bartheme.task.exception.UnprocessableContentException;
 import com.bartheme.task.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,9 +26,21 @@ public class TaskController {
     }
 
     @GetMapping("all")
-    public ResponseEntity<List<TaskDto>> getAllTasks() {
-        List<TaskDto> taskList = taskService.getAllTasks();
-        return ResponseEntity.ok(taskList);
+    public ResponseEntity<List<TaskDto>> getAllTasks(
+            @RequestParam(required = false) List<String> statuses,
+            @RequestParam(required = false) List<String> categories,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String sortOrder
+    ) {
+        Sort sort = Sort.unsorted();
+        if (sortBy != null && sortOrder != null) {
+            Sort.Direction direction = sortOrder.equalsIgnoreCase("desc") ?
+                    Sort.Direction.DESC : Sort.Direction.ASC;
+            sort = Sort.by(direction, sortBy);
+        }
+
+        return ResponseEntity.ok(taskService.filterTasks(statuses, categories, title, sort));
     }
 
     @PostMapping

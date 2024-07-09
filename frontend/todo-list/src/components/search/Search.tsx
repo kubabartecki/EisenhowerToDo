@@ -47,7 +47,12 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const Search: React.FC = () => {
+interface SearchProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+const Search: React.FC<SearchProps> = ({value, onChange}) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Toolbar>
@@ -56,8 +61,10 @@ const Search: React.FC = () => {
             <SearchIcon />
           </SearchIconWrapper>
           <StyledInputBase
-            placeholder="Search…"
+            placeholder="Search title"
             inputProps={{ 'aria-label': 'search' }}
+            value={value}
+            onChange={(e) => onChange(e.target.value)}
           />
         </SearchStyled>
       </Toolbar>

@@ -1,9 +1,27 @@
 import { get, post, put, del } from '../utils/request';
-import { Task, TaskCreate, TaskUpdate } from '../types/models';
+import { Task, TaskCategoryString, TaskCreate, TaskStatusString, TaskUpdate } from '../types/models';
 import { mapTaskCategory, mapTaskStatus } from '../utils/enumMapping';
 
-export const fetchTasks = async (): Promise<Task[]> => {
-  const tasks = await get<Task[]>('/tasks/all');
+export const fetchTasks = async (
+  { statuses, categories, title, sortBy, sortDirection }: {
+    statuses?: TaskStatusString[],
+    categories?: TaskCategoryString[],
+    title?: string,
+    sortBy?: keyof Task,
+    sortDirection?: 'asc' | 'desc'
+  }
+): Promise<Task[]> => {
+
+  const params = [
+    statuses ? `statuses=${statuses.join(',')}` : '',
+    categories ? `categories=${categories.join(',')}` : '',
+    title ? `title=${title}` : '',
+    sortBy ? `sortBy=${sortBy}` : '',
+    sortDirection ? `sortDirection=${sortDirection}` : '',
+  ].filter(Boolean).join('&');
+
+  const url = '/tasks/all' + (params ? `?${params}` : '');
+  const tasks = await get<Task[]>(url);
   return tasks.map(task => ({
     ...task,
     status: mapTaskStatus(task.status),

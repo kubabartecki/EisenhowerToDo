@@ -11,7 +11,7 @@ export const useTasks = () => {
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        const data = await fetchTasks();
+        const data = await fetchTasks({});
         setTasks(data);
       } catch (error) {
         setError('Failed to fetch tasks');

@@ -1,0 +1,15 @@
+.search-filter-wrap {
+  display: flex;
+  flex-direction: row;
+
+  .checkbox-wrap {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .filter-button {
+    align-self: center;
+  }
+}
