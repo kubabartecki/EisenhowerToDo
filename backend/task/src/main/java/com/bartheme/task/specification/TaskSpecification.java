@@ -10,7 +10,6 @@ import jakarta.persistence.criteria.Root;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class TaskSpecification implements Specification<Task> {
 
@@ -31,14 +30,14 @@ public class TaskSpecification implements Specification<Task> {
         if (statuses != null && !statuses.isEmpty()) {
             List<TaskStatus> statusEnums = statuses.stream()
                     .map(TaskStatus::valueOf)
-                    .collect(Collectors.toList());
+                    .toList();
             predicate = criteriaBuilder.and(predicate, root.get("status").in(statusEnums));
         }
 
         if (categories != null && !categories.isEmpty()) {
             List<TaskEisenhowerCategory> categoryEnums = categories.stream()
                     .map(TaskEisenhowerCategory::valueOf)
-                    .collect(Collectors.toList());
+                    .toList();
             predicate = criteriaBuilder.and(predicate, root.get("category").in(categoryEnums));
         }
 
