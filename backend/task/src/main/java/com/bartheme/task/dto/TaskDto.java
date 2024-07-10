@@ -3,9 +3,15 @@ package com.bartheme.task.dto;
 
 import com.bartheme.task.model.Task;
 
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class TaskDto {
     private Integer id;
     private String title;

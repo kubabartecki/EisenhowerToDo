@@ -8,6 +8,7 @@ import com.bartheme.task.exception.UnprocessableContentException;
 import com.bartheme.task.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,7 +46,7 @@ public class TaskController {
 
     @PostMapping
     public ResponseEntity<TaskDto> createTask(@RequestBody TaskCreateDto taskCreateDto) {
-        return ResponseEntity.ok(taskService.createTask(taskCreateDto));
+        return new ResponseEntity<>(taskService.createTask(taskCreateDto), HttpStatus.CREATED);
     }
 
     @PutMapping("{id}")

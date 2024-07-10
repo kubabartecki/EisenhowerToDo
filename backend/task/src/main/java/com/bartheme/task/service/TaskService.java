@@ -24,7 +24,7 @@ public class TaskService {
 
     public TaskDto getTaskById(Integer id) throws ResourceNotFoundException {
         Task task =  taskRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Task not found for id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(id));
         return new TaskDto(task);
     }
 
@@ -48,18 +48,18 @@ public class TaskService {
     public TaskDto updateTask(Integer id, TaskUpdateDto taskUpdateDto)
             throws ResourceNotFoundException, UnprocessableContentException {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Task not found for id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(id));
         task.setTitle(taskUpdateDto.getTitle());
         task.setDescription(taskUpdateDto.getDescription());
         try {
             task.setStatus(TaskStatus.valueOf(taskUpdateDto.getStatus()));
         } catch (IllegalArgumentException e) {
-            throw new UnprocessableContentException("Not valid status enum value");
+            throw new UnprocessableContentException("Not valid status enum value: " + taskUpdateDto.getStatus());
         }
         try {
             task.setCategory(TaskEisenhowerCategory.valueOf(taskUpdateDto.getCategory()));
         } catch (IllegalArgumentException e) {
-            throw new UnprocessableContentException("Not valid category enum value");
+            throw new UnprocessableContentException("Not valid category enum value: " + taskUpdateDto.getCategory());
         }
         task.setDueDate(LocalDateTime.parse(taskUpdateDto.getDueDate()));
         return new TaskDto(taskRepository.save(task));
@@ -68,7 +68,7 @@ public class TaskService {
 
     public String deleteTask(Integer id) throws ResourceNotFoundException {
         Task task = taskRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Task not found for id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException(id));
         taskRepository.delete(task);
         return "Task deleted";
     }
