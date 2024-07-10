@@ -2,7 +2,6 @@ package com.bartheme.task.management;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -20,9 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class RequestCounterFilter implements Filter {
 
     private final Map<String, Map<String, AtomicInteger>> requestCountMap = new HashMap<>();
-
-    @Override
-    public void init(FilterConfig filterConfig) throws ServletException {}
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
