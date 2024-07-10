@@ -28,11 +28,6 @@ public class TaskService {
         return new TaskDto(task);
     }
 
-    public List<TaskDto> getAllTasks() {
-        List<Task> tasks = taskRepository.findAll();
-        return tasks.stream().map(TaskDto::new).toList();
-    }
-
     public List<TaskDto> filterTasks(List<String> statuses, List<String> categories, String title, Sort sort) {
         TaskSpecification spec = new TaskSpecification(statuses, categories, title);
         List<Task> tasks = taskRepository.findAll(spec, sort);
