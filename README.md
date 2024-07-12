@@ -7,14 +7,23 @@ EisenhowerToDo is a task management application built with Spring Boot (Java) fo
 ### Backend Setup
 
 1. **Database Setup**:
-   - Open `backend/task/src/main/resources/application.properties`.
-   - Configure the PostgreSQL database connection details:
-     ```properties
-     spring.datasource.url=jdbc:postgresql://localhost:5432/your_database_name
-     spring.datasource.username=your_username
-     spring.datasource.password=your_password
-     spring.datasource.driver-class-name=org.postgresql.Driver
+   - To use docker database simply run
+
      ```
+     docker compose up
+     ```
+
+     `application.properties` are already set up to that database
+     
+   - In case of using other database:
+      - Open `backend/task/src/main/resources/application.properties`.
+      - Configure the PostgreSQL database connection details:
+        ```properties
+        spring.datasource.url=jdbc:postgresql://localhost:5432/your_database_name
+        spring.datasource.username=your_username
+        spring.datasource.password=your_password
+        spring.datasource.driver-class-name=org.postgresql.Driver
+        ```
 
 2. **Start Backend**:
    - Navigate to the `backend/task` directory.
