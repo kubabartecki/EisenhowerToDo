@@ -5,17 +5,33 @@ import com.bartheme.task.model.TaskEisenhowerCategory;
 import com.bartheme.task.model.TaskStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
+@Testcontainers
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class TaskRepositoryTest {
 
+    @Container
+    @ServiceConnection
+    private static final PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres");
     @Autowired
     private TaskRepository taskRepository;
+
+    @Test
+    void PostgreSQLContainer_ConnectionTest_IsRunning() {
+        assertThat(postgreSQLContainer.isCreated()).isTrue();
+        assertThat(postgreSQLContainer.isRunning()).isTrue();
+    }
 
     @Test
     void TaskRepository_SaveTask_ReturnsSameSavedTask() {
